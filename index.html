@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+<meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=no, viewport-fit=cover"
+    />
+  <title>Teacher Portal — Aleeman School</title>
+  <link rel="icon" type="image/x-icon" href="aleeman-logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  
+
+
+
+   <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#008000" />
+    <script src="pwa-install.js" defer></script>
+
+
+    <link rel="icon" type="image/x-icon" href="aleeman-logo.logo" />
+    <link rel="apple-touch-icon" sizes="180x180" href="aleeman-logo.png" />
+
+    <!-- ④ PWA meta -->
+    <meta name="application-name" content="Aleeman School" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Aleeman School" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta
+      name="theme-color"
+      content="#008000"
+      media="(prefers-color-scheme: dark)"
+    />
+
+
+
+
+    <!-- ⑥ Manifest -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- ⑦ Open Graph — used by WhatsApp, Facebook, Discord, iMessage previews -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://aleemanschool-teacher-portal.vercel.app/" />
+    <meta property="og:site_name" content="Aleeman" />
+    <meta
+      property="og:title"
+      content="Teacher Portal — Aleeman School"
+    />
+    <meta
+      property="og:description"
+      content="Aleeman School — Teacher Portal. Access resources, manage classes, and connect with students."
+    />
+    <meta
+      property="og:image"
+      content="https://aleemanschool-teacher-portal.vercel.app/aleeman-logo.jpeg"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --p1:#0d3b7a; --p2:#1565c0; --p3:#1976d2; --p4:#42a5f5; --p5:#e3f2fd;
+      --green:#1a5c2a; --green-l:#d8f3dc;
+      --red:#c62828; --red-l:#ffebee;
+      --amber:#f57f17; --amber-l:#fff8e1;
+      --text:#1a1f2e; --muted:#5a6a7c; --border:#c5d5e8; --bg:#f4f8fd; --white:#fff;
+      --shadow:0 2px 14px rgba(21,101,192,.1);
+    }
+    * {
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+    body { font-family:'DM Sans',system-ui,sans-serif; background:var(--bg); color:var(--text); }
+    h1,h2,h3,h4 { font-family:'Outfit',sans-serif; }
+
+    /* AUTH LOADING */
+    #auth-loading { position:fixed; inset:0; background:linear-gradient(135deg,var(--p1),var(--p2)); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:99999; gap:1.25rem; }
+    #auth-loading .al-icon { font-size:3rem; }
+    #auth-loading .al-spinner { width:44px; height:44px; border:4px solid rgba(255,255,255,.25); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
+    #auth-loading p { color:rgba(255,255,255,.85); font-size:.9rem; font-weight:600; }
+
+    /* LOGIN */
+    #login-page { min-height:100vh; display:none; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--p1),var(--p2),var(--p3)); }
+    .login-box { background:var(--white); border-radius:20px; padding:2.5rem 2rem; width:100%; max-width:400px; box-shadow:0 12px 48px rgba(0,0,0,.25); text-align:center; }
+    .login-box .lgo { font-size:2.8rem; margin-bottom:.5rem; }
+    .login-box h1 { font-size:1.5rem; color:var(--p2); margin-bottom:.25rem; }
+    .login-box .sub { font-size:.82rem; color:var(--muted); margin-bottom:1.75rem; }
+    .fg { text-align:left; margin-bottom:1rem; }
+    .fg label { display:block; font-size:.78rem; font-weight:600; color:var(--muted); margin-bottom:.3rem; letter-spacing:.03em; text-transform:uppercase; }
+    .fg input,.fg select { width:100%; padding:.72rem .95rem; border:1.5px solid var(--border); border-radius:10px; font-size:.92rem; outline:none; transition:border .2s; font-family:inherit; background:var(--white); }
+    .fg input:focus,.fg select:focus { border-color:var(--p2); box-shadow:0 0 0 3px rgba(21,101,192,.08); }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; padding:.72rem 1.4rem; border-radius:10px; border:none; font-size:.88rem; font-weight:600; cursor:pointer; transition:opacity .15s,transform .15s; font-family:'Outfit',sans-serif; }
+    .btn:hover:not(:disabled) { opacity:.88; transform:translateY(-1px); }
+    .btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+    .btn-primary { background:var(--p2); color:var(--white); }
+    .btn-green   { background:var(--green); color:var(--white); }
+    .btn-ghost   { background:transparent; color:var(--p2); border:1.5px solid var(--p2); }
+    .btn-ghost-w { background:transparent; color:var(--white); border:1.5px solid rgba(255,255,255,.35); }
+    .btn-sm { padding:.38rem .9rem; font-size:.78rem; }
+    .btn-full { width:100%; }
+    .err { background:var(--red-l); color:var(--red); padding:.65rem .95rem; border-radius:10px; font-size:.84rem; margin-top:.75rem; display:none; }
+    .err.show { display:block; }
+
+    /* DASHBOARD */
+    #dashboard-page { display:none; min-height:100vh; }
+    .topbar { background:var(--p1); color:var(--white); padding:.9rem 1.5rem; display:flex; align-items:center; justify-content:space-between; box-shadow:0 3px 12px rgba(0,0,0,.2); }
+    .topbar-l { display:flex; align-items:center; gap:.75rem; }
+    .topbar-l .ico { font-size:1.5rem; }
+    .topbar-info h2 { font-size:1rem; font-weight:800; }
+    .topbar-info p { font-size:.73rem; opacity:.7; }
+    .topbar-r { display:flex; align-items:center; gap:.85rem; }
+    .teacher-badge { background:rgba(255,255,255,.15); border-radius:20px; padding:.3rem .85rem; font-size:.8rem; font-weight:600; }
+
+    .content { max-width:1050px; margin:0 auto; padding:1.5rem; }
+
+    /* Filter Card */
+    .filter-card { background:var(--white); border-radius:14px; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:1.5rem; }
+    .filter-card h3 { font-size:1rem; font-weight:800; margin-bottom:1rem; color:var(--p2); display:flex; align-items:center; gap:.5rem; }
+    .filter-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; align-items:end; }
+    .auto-badge { display:inline-block; background:var(--green-l); color:var(--green); padding:.15rem .5rem; border-radius:10px; font-size:.68rem; font-weight:700; margin-left:.35rem; vertical-align:middle; }
+
+    /* Session error */
+    .session-err { display:none; background:var(--red-l); color:var(--red); border-radius:8px; padding:.65rem .95rem; font-size:.82rem; margin-top:.75rem; font-weight:600; }
+    .session-err.show { display:block; }
+
+    /* Students Card */
+    .students-card { background:var(--white); border-radius:14px; box-shadow:var(--shadow); overflow:hidden; }
+    .sc-header { padding:1rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem; }
+    .sc-header h3 { font-size:1rem; font-weight:800; }
+    .count-badge { background:var(--p5); color:var(--p2); padding:.2rem .7rem; border-radius:20px; font-size:.78rem; font-weight:700; }
+    table { width:100%; border-collapse:collapse; font-size:.86rem; }
+    th { background:var(--p5); color:var(--p1); font-weight:800; padding:.7rem 1rem; text-align:left; font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; }
+    td { padding:.65rem 1rem; border-bottom:1px solid #edf1f7; vertical-align:middle; }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:#f8fbff; }
+    .empty-row td { text-align:center; color:var(--muted); padding:3rem; font-size:.88rem; }
+
+    /* Skeleton */
+    @keyframes shimmer { 0%{background-position:200% center} 100%{background-position:-200% center} }
+    .skel { display:block; height:13px; border-radius:7px; background:linear-gradient(90deg,#e8f0f5 25%,#d5e5f5 50%,#e8f0f5 75%); background-size:200% 100%; animation:shimmer 1.4s ease-in-out infinite; }
+    .skel-sm { width:65%; }
+
+    /* Status */
+    .status { display:inline-block; padding:.2rem .65rem; border-radius:20px; font-size:.73rem; font-weight:700; }
+    .st-done    { background:var(--green-l); color:var(--green); }
+    .st-pending { background:var(--amber-l); color:var(--amber); }
+
+    /* Score Modal */
+    .modal-ov { position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:1000; padding:.75rem; }
+    .modal-ov.open { display:flex; }
+    .modal { background:var(--white); border-radius:16px; width:100%; max-width:880px; box-shadow:0 24px 64px rgba(0,0,0,.2); max-height:94vh; display:flex; flex-direction:column; }
+    .modal-hdr { padding:1.1rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; justify-content:space-between; flex-shrink:0; background:var(--white); z-index:10; border-radius:16px 16px 0 0; }
+    .modal-hdr h3 { font-size:1.05rem; }
+    .modal-hdr .meta { font-size:.78rem; color:var(--muted); margin-top:.2rem; }
+    .modal-close { background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--muted); flex-shrink:0; padding:.2rem; }
+    .modal-body { padding:1rem 1.25rem; overflow-y:auto; flex:1; }
+    .modal-ftr { padding:1rem 1.5rem; border-top:1px solid var(--border); display:flex; gap:.6rem; justify-content:flex-end; flex-shrink:0; flex-wrap:wrap; align-items:center; }
+
+    /* Score table */
+    .score-wrap { overflow-x:auto; }
+    .score-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    .score-table th { background:var(--p5); padding:.58rem .7rem; text-align:left; font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; white-space:nowrap; }
+    .score-table th:not(:first-child) { text-align:center; }
+    .score-table td { padding:.42rem .5rem; border-bottom:1px solid #edf1f7; vertical-align:middle; }
+    .score-table td:not(:first-child) { text-align:center; }
+    .score-table tr:last-child td { border-bottom:none; }
+    .score-table tr:nth-child(even) td { background:#f8fbff; }
+
+    /* Locked rows */
+    .row-locked .score-input { opacity:.35; pointer-events:none; background:#f4f4f4; }
+    .row-locked .ca-total { opacity:.35; }
+    .row-locked .grand-total,.row-locked .grade-pill { opacity:.35; }
+
+    /* Subject name cell */
+    .subj-cell { display:flex; flex-direction:column; gap:.3rem; min-width:160px; }
+    .subj-name-text { font-weight:600; font-size:.84rem; }
+    .unlock-row { display:flex; align-items:center; gap:.3rem; }
+    .unlock-btn { display:inline-flex; align-items:center; gap:.25rem; background:none; border:1px solid var(--border); border-radius:6px; padding:.2rem .45rem; font-size:.72rem; cursor:pointer; color:var(--muted); transition:all .15s; white-space:nowrap; }
+    .unlock-btn:hover { background:var(--p5); color:var(--p2); border-color:var(--p2); }
+    .unlock-btn.unlocked { background:var(--green-l); color:var(--green); border-color:var(--green); }
+    .unlock-input-wrap { display:none; flex-direction:column; gap:.2rem; }
+    .unlock-input-wrap.show { display:flex; }
+    .unlock-inp { padding:.25rem .45rem; border:1.5px solid var(--border); border-radius:6px; font-size:.78rem; width:110px; outline:none; font-family:inherit; }
+    .unlock-inp:focus { border-color:var(--p2); }
+    .unlock-inp.err { border-color:var(--red); background:var(--red-l); }
+    .unlock-confirm-btn { padding:.22rem .5rem; background:var(--p2); color:#fff; border:none; border-radius:6px; font-size:.72rem; cursor:pointer; white-space:nowrap; }
+
+    .subj-name { font-weight:600; white-space:nowrap; font-size:.84rem; }
+    .score-input { width:56px; padding:.32rem .3rem; border:1.5px solid var(--border); border-radius:6px; font-size:.82rem; text-align:center; outline:none; transition:border .15s; font-family:inherit; }
+    .score-input:focus { border-color:var(--p2); }
+    .score-input.invalid { border-color:var(--red) !important; background:var(--red-l); }
+    .ca-total { font-weight:800; color:var(--p2); background:var(--p5); border-radius:6px; padding:.2rem .4rem; font-size:.82rem; }
+    .grand-total { font-weight:900; font-size:.9rem; }
+    .grade-pill { display:inline-block; padding:.15rem .5rem; border-radius:6px; font-size:.72rem; font-weight:800; }
+    .gA { background:#e8f5e9; color:#1a5c2a; } .gB { background:#e3f2fd; color:#1565c0; }
+    .gC { background:#fff8e1; color:#e65100; } .gD { background:#fff3e0; color:#bf360c; }
+    .gF { background:var(--red-l); color:var(--red); }
+
+    .modal-summary { display:flex; gap:1.25rem; flex-wrap:wrap; font-size:.82rem; color:var(--muted); }
+    .modal-summary strong { color:var(--text); }
+    .info-note { background:var(--p5); border-radius:10px; padding:.72rem 1rem; font-size:.82rem; color:var(--p1); margin-bottom:1rem; }
+    .lock-legend { font-size:.76rem; color:var(--muted); background:#f8fbff; border-radius:8px; padding:.6rem .9rem; margin-bottom:.75rem; border:1px solid var(--border); }
+
+    /* Toast */
+    #toast { position:fixed; bottom:1.5rem; right:1.5rem; padding:.75rem 1.25rem; border-radius:10px; font-size:.86rem; z-index:9999; transform:translateY(20px); opacity:0; transition:all .25s; pointer-events:none; font-weight:600; max-width:320px; }
+    #toast.show { transform:translateY(0); opacity:1; }
+    #toast.success { background:var(--green); color:var(--white); }
+    #toast.error   { background:var(--red); color:var(--white); }
+    #toast.info    { background:var(--p2); color:var(--white); }
+    .spinner { display:inline-block; width:16px; height:16px; border:2.5px solid rgba(255,255,255,.4); border-top-color:var(--white); border-radius:50%; animation:spin .6s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    code { background:#edf1f7; padding:.1rem .4rem; border-radius:4px; font-size:.82em; }
+
+    @media (max-width:600px) { .content { padding:1rem; } .topbar { flex-wrap:wrap; gap:.5rem; } }
+  </style>
+</head>
+<body>
+
+<div id="auth-loading">
+  <div class="al-icon">👨‍🏫</div>
+  <div class="al-spinner"></div>
+  <p>Verifying session…</p>
+</div>
+
+<div id="login-page">
+  <div class="login-box">
+    <div class="lgo">👨‍🏫</div>
+    <h1>Teacher Login</h1>
+    <p class="sub">Aleeman School of Science &amp; Arabic Studies</p>
+    <div class="fg"><label>Email Address</label><input type="email" id="l-email" placeholder="teacher@aleeman.edu.ng" autocomplete="email" /></div>
+    <div class="fg"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" /></div>
+    <button class="btn btn-primary btn-full" id="login-btn">Sign In</button>
+    <div class="err" id="login-err"></div>
+    <!-- <p style="margin-top:1.25rem;font-size:.78rem;color:var(--muted)"><a href="./index.html" style="color:var(--p2)">← Back to Portal Home</a></p> -->
+  </div>
+</div>
+
+<div id="dashboard-page">
+  <div class="topbar">
+    <div class="topbar-l">
+      <span class="ico">👨‍🏫</span>
+      <div class="topbar-info">
+        <h2>Teacher Portal</h2>
+        <p>Aleeman School of Science &amp; Arabic Studies</p>
+      </div>
+    </div>
+    <div class="topbar-r">
+      <span class="teacher-badge" id="t-name-badge">Teacher</span>
+      <button class="btn btn-ghost-w btn-sm" id="logout-btn">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="filter-card">
+      <h3>📂 Select Class &amp; Session</h3>
+      <div class="filter-grid">
+        <div class="fg" style="margin:0">
+          <label>Class</label>
+          <select id="sel-class"><option value="">Choose class…</option>
+            <option>JSS1</option><option>JSS2</option><option>JSS3</option>
+            <option>SS1</option><option>SS2</option><option>SS3</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Term <span class="auto-badge" id="term-auto-badge" style="display:none">AUTO</span></label>
+          <select id="sel-term"><option value="">Choose term…</option>
+            <option>First Term</option><option>Second Term</option><option>Third Term</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Session <span class="auto-badge" id="session-auto-badge" style="display:none">AUTO</span></label>
+          <input type="text" id="sel-session" placeholder="e.g. 2024/2025" />
+        </div>
+        <div style="align-self:flex-end">
+          <button class="btn btn-primary btn-full" id="load-btn">Load Students</button>
+        </div>
+      </div>
+      <div class="session-err" id="session-err"></div>
+    </div>
+
+    <div id="students-card" style="display:none">
+      <div class="students-card">
+        <div class="sc-header">
+          <div>
+            <h3 id="cls-heading">Students</h3>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:.2rem" id="session-sub"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+            <div style="font-size:.78rem;color:var(--muted)" id="assess-summary"></div>
+            <span class="count-badge" id="s-count">0 students</span>
+          </div>
+        </div>
+        <div style="padding:.75rem 1.25rem">
+          <div class="info-note">📝 Click <strong>Enter Result</strong> to record scores. Each subject must be unlocked with its password before scores can be entered.</div>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>Student Name</th><th>Number</th><th>Gender</th><th>Status</th><th>Avg / 100</th><th>Action</th></tr></thead>
+          <tbody id="students-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCORE MODAL -->
+<div class="modal-ov" id="modal-scores">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div><h3 id="modal-s-name">Enter Scores</h3><div class="meta" id="modal-s-meta"></div></div>
+      <button class="modal-close" id="close-modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="lock-legend">🔒 Each subject requires its password to unlock. Click the lock button next to a subject, enter the password, and press ✓ to enable score entry for that subject.</div>
+      <div class="score-wrap">
+        <table class="score-table">
+          <thead id="score-thead"></thead>
+          <tbody id="score-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <div class="modal-summary" id="modal-summary"></div>
+      <button class="btn btn-ghost btn-sm" id="close-modal-2">Cancel</button>
+      <button class="btn btn-green btn-sm" id="save-btn">💾 Save Result</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc,
+         query, where, orderBy, serverTimestamp, writeBatch }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const FB_CONFIG = {
+  apiKey:"AIzaSyD8fS0g_IU9RKBdyhx-WmFZZbttEbCC464",
+  authDomain:"aleeman-school.firebaseapp.com",
+  projectId:"aleeman-school",
+  storageBucket:"aleeman-school.firebasestorage.app",
+  messagingSenderId:"1095322007489",
+  appId:"1:1095322007489:web:0e43cb98bd514f0ea7e140"
+};
+const app  = getApps().length ? getApp() : initializeApp(FB_CONFIG);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+/* ── Default data ── */
+const DEFAULT_TESTS  = [{id:'t1',name:'1st Test',max:10},{id:'t2',name:'2nd Test',max:10},{id:'t3',name:'3rd Test',max:10}];
+const DEFAULT_JSS    = ['Mathematics','English Language','Basic Science','Basic Technology','Social Studies','Civic Education','Agricultural Science','Computer Studies','Islamic Religious Studies','Arabic Language','Business Studies','PHE'];
+const DEFAULT_SS     = ['Mathematics','English Language','Physics','Chemistry','Biology','Further Mathematics','Agricultural Science','Computer Science','Arabic Language','Islamic Studies','Economics','Geography'];
+
+/* ── State ── */
+let currentTeacher   = null;
+let teacherSubjects  = null;
+let subjectPasswords = {}; // { JSS: {Mathematics: 'pass'}, SS: {...} }
+let testsConfig      = [...DEFAULT_TESTS];
+let currentStudents  = [];
+let savedResults     = {};
+let currentStudent   = null;
+let selClass='', selTerm='', selSession='';
+let adminSession     = ''; // set by admin — max allowed
+let adminTerm    = ''; 
+let unlockedSubjects = new Set(); // indices unlocked in current modal
+
+/* ── Helpers ── */
+const $ = id => document.getElementById(id);
+
+/**
+ * CRITICAL: This exact function is used in admin.html and result-checker.html.
+ * Any change here MUST be mirrored in both other files.
+ */
+function resultDocId(num, cls, term, session) {
+  const s = v => String(v??'').trim().toLowerCase()
+    .replace(/\s+/g,'-').replace(/[\/\\]/g,'-').replace(/[^a-z0-9\-]/g,'');
+  return `${s(num)}__${s(cls)}__${s(term)}__${s(session)}`;
+}
+
+function toast(msg, type='success', dur=3500) {
+  const t=$('toast'); t.textContent=msg; t.className=`show ${type}`;
+  setTimeout(()=>{t.className='';},dur);
+}
+function setBtn(btn, loading) {
+  if (!btn) return;
+  if (loading) { btn.dataset.orig=btn.innerHTML; btn.innerHTML='<span class="spinner"></span> Please wait…'; btn.disabled=true; }
+  else { btn.innerHTML=btn.dataset.orig||btn.innerHTML; btn.disabled=false; delete btn.dataset.orig; }
+}
+function showErr(msg) { const e=$('login-err'); e.textContent=msg; e.classList.add('show'); }
+function clearErr()   { $('login-err').classList.remove('show'); }
+function showSessionErr(msg) { const e=$('session-err'); e.textContent=msg; e.classList.add('show'); }
+function clearSessionErr()   { $('session-err').classList.remove('show'); }
+function openModal()  { $('modal-scores').classList.add('open'); }
+function closeModal() { $('modal-scores').classList.remove('open'); unlockedSubjects.clear(); }
+const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* Skeleton rows */
+function skeletonRows(rows=5) {
+  $('students-tbody').innerHTML = Array(rows).fill(
+    `<tr>${Array(7).fill('<td><span class="skel skel-sm"></span></td>').join('')}</tr>`
+  ).join('');
+}
+
+/* ── Session validation ── */
+function parseSession(s) {
+  const m=String(s||'').match(/^(\d{4})\/(\d{4})$/);
+  if (!m) return null;
+  const start=parseInt(m[1]), end=parseInt(m[2]);
+  if (end!==start+1) return null;
+  return {start,end,str:s};
+}
+
+
+const TERM_ORDER = { 'First Term': 1, 'Second Term': 2, 'Third Term': 3 };
+
+function validateTeacherSession(inputSession, inputTerm, adminSess, adminActiveTerm) {
+  const input = parseSession(inputSession);
+  if (!input) return 'Session must be in format YYYY/YYYY (e.g. 2025/2026) where end = start + 1.';
+
+  const currentYear = new Date().getFullYear();
+  if (input.end > currentYear + 2) return `Session "${inputSession}" is too far in the future.`;
+
+  if (adminSess) {
+    const admin = parseSession(adminSess);
+    if (admin) {
+      // Block future sessions
+      if (input.end > admin.end) {
+        return `Session "${inputSession}" exceeds the admin-set active session (${adminSess}). You can only submit up to ${adminSess}.`;
+      }
+      // Same session → also check the term
+      if (input.end === admin.end && adminActiveTerm) {
+        const teacherTermRank = TERM_ORDER[inputTerm]      || 0;
+        const adminTermRank   = TERM_ORDER[adminActiveTerm] || 3;
+        if (teacherTermRank > adminTermRank) {
+          return `Term "${inputTerm}" is beyond the active term (${adminActiveTerm}) for session ${adminSess}. Please wait for the admin to advance the term.`;
+        }
+      }
+    }
+  }
+  return null; // valid
+}
+
+/* ── Page visibility ── */
+function showLogin() {
+  $('login-page').style.display='flex'; $('dashboard-page').style.display='none'; $('auth-loading').style.display='none';
+  const btn=$('login-btn'); if(btn){btn.disabled=false;btn.innerHTML='Sign In';delete btn.dataset.orig;}
+}
+function showDash() {
+  $('login-page').style.display='none'; $('dashboard-page').style.display='block'; $('auth-loading').style.display='none';
+}
+
+/* ── Auth state ── */
+// In teacher.html — onAuthStateChanged
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    // ✅ Check: Teachers MUST exist in the teachers collection
+    const teacherDoc = await getDoc(doc(db, 'teachers', user.uid));
+    if (!teacherDoc.exists()) {
+      // Admin or unknown user trying to access teacher portal — block them
+      await signOut(auth);
+      showLogin();
+      showErr('Access denied. Please contact  the Admin.');
+      return;
+    }
+    // Use name from Firestore, not Auth displayName
+    currentTeacher = {
+      uid: user.uid,
+      email: user.email,
+      name: teacherDoc.data().name || user.email
+    };
+    $('t-name-badge').textContent = currentTeacher.name;
+    showDash();
+    await loadConfig();
+  } else {
+    currentTeacher = null;
+    showLogin();
+  }
+});
+
+/* ── Load admin config ── */
+async function loadConfig() {
+  try {
+    const [sessSnap, assessSnap, subjSnap, passSnap] = await Promise.all([
+      getDoc(doc(db,'settings','session')),
+      getDoc(doc(db,'settings','assessment')),
+      getDoc(doc(db,'settings','subjects')),
+      getDoc(doc(db,'settings','subjectPasswords')),
+    ]);
+    if (sessSnap.exists()) {
+      const d=sessSnap.data();
+      if (d.activeSession) {
+        adminSession=$('sel-session').value=d.activeSession;
+        // $('sel-session').readOnly = true;
+        $('session-auto-badge').style.display='inline';
+      }
+      if (d.activeTerm) { 
+        adminTerm = d.activeTerm;
+        $('sel-term').value=d.activeTerm;
+        // $('sel-term').disabled = true; 
+         $('term-auto-badge').style.display='inline';
+       }
+    }
+    testsConfig = (assessSnap.exists()&&assessSnap.data().tests?.length) ? assessSnap.data().tests : [...DEFAULT_TESTS];
+    teacherSubjects = subjSnap.exists()
+      ? { JSS:subjSnap.data().JSS||DEFAULT_JSS, SS:subjSnap.data().SS||DEFAULT_SS }
+      : { JSS:DEFAULT_JSS, SS:DEFAULT_SS };
+    subjectPasswords = passSnap.exists() ? { JSS:passSnap.data().JSS||{}, SS:passSnap.data().SS||{} } : {};
+  } catch(err) {
+    console.warn('Config load (non-fatal):', err.message);
+    testsConfig=[...DEFAULT_TESTS]; teacherSubjects={JSS:DEFAULT_JSS,SS:DEFAULT_SS}; subjectPasswords={};
+  }
+}
+
+function getSubjects(cls) {
+  if (!teacherSubjects) return DEFAULT_JSS;
+  return cls.startsWith('SS') ? teacherSubjects.SS : teacherSubjects.JSS;
+}
+function getPasswords(cls) {
+  const key=cls.startsWith('SS')?'SS':'JSS';
+  return subjectPasswords[key]||{};
+}
+
+/* ── Login ── */
+async function doLogin() {
+  clearErr();
+  const email=$('l-email').value.trim(), pass=$('l-pass').value, btn=$('login-btn');
+  if (!email||!pass) { showErr('Please fill in all fields.'); return; }
+  setBtn(btn,true);
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch(err) {
+    const m={'auth/invalid-credential':'Invalid email or password.','auth/user-not-found':'No account found.','auth/wrong-password':'Incorrect password.','auth/too-many-requests':'Too many attempts. Try later.','auth/network-request-failed':'Network error.'};
+    showErr(m[err.code]||`Login failed: ${err.message}`); setBtn(btn,false);
+  }
+}
+$('login-btn').addEventListener('click', doLogin);
+['l-email','l-pass'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}));
+
+/* ── Logout ── */
+$('logout-btn').addEventListener('click', async () => {
+  try { await signOut(auth); toast('Signed out.','info'); } catch{ toast('Sign out failed.','error'); }
+});
+
+/* ── Load Students ── */
+$('load-btn').addEventListener('click', async () => {
+  clearSessionErr();
+  selClass=$('sel-class').value; selTerm=$('sel-term').value; selSession=$('sel-session').value.trim();
+  if (!selClass||!selTerm||!selSession) { toast('Please select class, term, and enter session.','error'); return; }
+
+  // Validate session
+  const sessionError = validateTeacherSession(selSession, selTerm, adminSession, adminTerm);
+  if (sessionError) { showSessionErr('⚠️ '+sessionError); return; }
+
+  const btn=$('load-btn'); setBtn(btn,true);
+  $('students-card').style.display='block';
+  skeletonRows(6);
+
+  try {
+    const snap=await getDocs(query(collection(db,'students'),where('class','==',selClass),orderBy('name')));
+    currentStudents=snap.docs.map(d=>({id:d.id,...d.data()}));
+
+    savedResults={};
+    if (currentStudents.length) {
+      const resSnap=await getDocs(query(collection(db,'results'),where('class','==',selClass),where('term','==',selTerm),where('session','==',selSession)));
+      resSnap.docs.forEach(d=>{const data=d.data(); if(data.studentNumber) savedResults[data.studentNumber]=data;});
+    }
+
+    renderStudents();
+    $('cls-heading').textContent=`${selClass} — ${selTerm}`;
+    $('session-sub').textContent=`Academic Session: ${selSession}`;
+    $('s-count').textContent=`${currentStudents.length} student${currentStudents.length!==1?'s':''}`;
+    const caMax=testsConfig.reduce((s,t)=>s+Number(t.max||0),0);
+    $('assess-summary').textContent=`Tests: ${testsConfig.map(t=>`${t.name}(${t.max})`).join(', ')} | CA: ${caMax} | Exam: 70`;
+  } catch(err) { console.error(err); toast('Failed to load students: '+err.message,'error'); $('students-card').style.display='none'; }
+  finally { setBtn(btn,false); }
+});
+
+function renderStudents() {
+  const tb=$('students-tbody');
+  if (!currentStudents.length) { tb.innerHTML='<tr class="empty-row"><td colspan="7">No students in this class.</td></tr>'; return; }
+  tb.innerHTML=currentStudents.map((s,i)=>{
+    const res=savedResults[s.number], done=!!res;
+    const avg=done&&res.average!=null?res.average.toFixed(1)+'%':'—';
+    return `<tr>
+      <td>${i+1}</td><td><strong>${esc(s.name)}</strong></td><td><code>${esc(s.number)}</code></td>
+      <td>${esc(s.gender||'—')}</td>
+      <td><span class="status ${done?'st-done':'st-pending'}">${done?'✅ Done':'⏳ Pending'}</span></td>
+      <td><strong>${avg}</strong></td>
+      <td><button class="btn btn-primary btn-sm" onclick="window._openScoreModal('${esc(s.id)}')">${done?'✏️ Edit':'Enter Result'}</button></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Score Modal with subject passwords ── */
+window._openScoreModal = studentId => {
+  currentStudent=currentStudents.find(s=>s.id===studentId);
+  if (!currentStudent) return;
+  unlockedSubjects.clear();
+
+  $('modal-s-name').textContent=currentStudent.name;
+  $('modal-s-meta').textContent=`No: ${currentStudent.number} · ${selClass} · ${selTerm} · ${selSession}`;
+
+  const subjects=getSubjects(selClass);
+  const passwords=getPasswords(selClass);
+  const existing=savedResults[currentStudent.number];
+  const existingMap={};
+  if (existing?.subjects) existing.subjects.forEach(s=>{existingMap[s.name]=s;});
+
+  const testHeaders=testsConfig.map(t=>`<th title="Max: ${t.max}">${esc(t.name)}<br><span style="font-weight:400;opacity:.7">(0–${t.max})</span></th>`).join('');
+  const caMax=testsConfig.reduce((s,t)=>s+Number(t.max||0),0);
+  $('score-thead').innerHTML=`<tr>
+    <th style="min-width:180px">Subject</th>
+    ${testHeaders}
+    <th>CA<br><span style="font-weight:400;opacity:.7">(${caMax})</span></th>
+    <th>Exam<br><span style="font-weight:400;opacity:.7">(0–70)</span></th>
+    <th>Total</th><th>Grade</th>
+  </tr>`;
+
+  $('score-tbody').innerHTML=subjects.map((subj,si)=>{
+    const ex=existingMap[subj];
+    const hasPass=!!passwords[subj];
+    // If subject was previously saved, pre-fill values but keep locked unless password entered
+    const testInputs=testsConfig.map((t,ti)=>{
+      const val=ex?.tests?.find(x=>x.id===t.id)?.score??'';
+      return `<td><input class="score-input" type="number" min="0" max="${t.max}"
+        id="t_${si}_${ti}" value="${val}" disabled
+        oninput="window._recalcRow(${si})" /></td>`;
+    }).join('');
+    const exVal=ex?.exam??'';
+    const tot=ex?.total??'';
+    const gr=tot!==''?getGrade(Number(tot)):null;
+    return `<tr id="score-row-${si}" class="row-locked">
+      <td>
+        <div class="subj-cell">
+          <span class="subj-name-text">${esc(subj)}</span>
+          <div class="unlock-row">
+            ${hasPass?`
+              <button class="unlock-btn" id="unlock-btn-${si}" onclick="window._toggleUnlockForm(${si})">🔒 Unlock</button>
+              <div class="unlock-input-wrap" id="unlock-form-${si}">
+                <input class="unlock-inp" type="password" id="unlock-inp-${si}" placeholder="Subject password" autocomplete="off"
+                  onkeydown="if(event.key==='Enter')window._verifyUnlock(${si},'${subj.replace(/'/g,"\\'")}')" />
+                <button class="unlock-confirm-btn" onclick="window._verifyUnlock(${si},'${subj.replace(/'/g,"\\'")}')" title="Confirm">✓ Unlock</button>
+              </div>`
+            :`<button class="unlock-btn" id="unlock-btn-${si}" onclick="window._noPassUnlock(${si})">🔑 Unlock</button>`}
+          </div>
+        </div>
+      </td>
+      ${testInputs}
+      <td><span class="ca-total" id="ca_${si}">—</span></td>
+      <td><input class="score-input" type="number" min="0" max="70" id="ex_${si}" value="${exVal}" disabled oninput="window._recalcRow(${si})" /></td>
+      <td><strong class="grand-total" id="tot_${si}">${tot!==''?tot:'—'}</strong></td>
+      <td><span class="grade-pill ${gr?gr.cls:''}" id="gr_${si}">${gr?gr.g:'—'}</span></td>
+    </tr>`;
+  }).join('');
+
+  subjects.forEach((_,si)=>window._recalcRow(si));
+  updateModalSummary(subjects.length);
+  openModal();
+};
+
+/* Toggle unlock password form */
+window._toggleUnlockForm = si => {
+  if (unlockedSubjects.has(si)) return; // already unlocked
+  const form=$(`unlock-form-${si}`);
+  if (!form) return;
+  form.classList.toggle('show');
+  if (form.classList.contains('show')) $(`unlock-inp-${si}`)?.focus();
+};
+
+/* Verify subject password */
+window._verifyUnlock = (si, subjectName) => {
+  const passwords=getPasswords(selClass);
+  const correct=passwords[subjectName];
+  const entered=$(`unlock-inp-${si}`)?.value||'';
+  const inp=$(`unlock-inp-${si}`);
+  if (!correct||entered===correct) {
+    _doUnlock(si, subjectName);
+  } else {
+    if(inp){inp.classList.add('err');inp.value='';setTimeout(()=>inp.classList.remove('err'),1200);}
+    toast(`Incorrect password for "${subjectName}"`, 'error', 2200);
+  }
+};
+
+/* For subjects with no password (admin didn't set one), allow direct unlock */
+window._noPassUnlock = si => {
+  const subjects=getSubjects(selClass);
+  _doUnlock(si, subjects[si]);
+};
+
+function _doUnlock(si, subjectName) {
+  unlockedSubjects.add(si);
+  const row=document.getElementById(`score-row-${si}`);
+  const btn=document.getElementById(`unlock-btn-${si}`);
+  const form=document.getElementById(`unlock-form-${si}`);
+  if (row) row.classList.replace('row-locked','row-unlocked');
+  // Enable inputs
+  document.querySelectorAll(`#score-row-${si} .score-input`).forEach(inp=>{inp.disabled=false;});
+  if (btn) { btn.textContent='🔓 Unlocked'; btn.classList.add('unlocked'); btn.disabled=true; }
+  if (form) { form.classList.remove('show'); }
+  window._recalcRow(si);
+  updateModalSummary(getSubjects(selClass).length);
+  toast(`"${subjectName}" unlocked — enter scores`, 'success', 1800);
+}
+
+/* Recalculate a row */
+window._recalcRow = si => {
+  if (!unlockedSubjects.has(si)) return;
+  let caTotal=0, caValid=true;
+  testsConfig.forEach((t,ti)=>{
+    const inp=document.getElementById(`t_${si}_${ti}`); if(!inp) return;
+    const v=inp.value.trim();
+    if (v===''){caValid=false;return;}
+    const n=Number(v);
+    if(isNaN(n)||n<0||n>t.max){inp.classList.add('invalid');caValid=false;return;}
+    inp.classList.remove('invalid'); caTotal+=n;
+  });
+  const caEl=document.getElementById(`ca_${si}`);
+  const exInp=document.getElementById(`ex_${si}`);
+  const totEl=document.getElementById(`tot_${si}`);
+  const grEl=document.getElementById(`gr_${si}`);
+  if(caEl) caEl.textContent=caValid?String(caTotal):'—';
+  const exV=exInp?.value.trim()??'';
+  const exam=Number(exV);
+  if(exV!==''&&!isNaN(exam)&&exam>=0&&exam<=70){
+    exInp?.classList.remove('invalid');
+    if(caValid){const tot=caTotal+exam,gr=getGrade(tot);if(totEl)totEl.textContent=String(tot);if(grEl){grEl.textContent=gr.g;grEl.className=`grade-pill ${gr.cls}`;}}
+    else{if(totEl)totEl.textContent='—';if(grEl){grEl.textContent='—';grEl.className='grade-pill';}}
+  } else {
+    if(exV&&exV!=='')exInp?.classList.add('invalid'); else exInp?.classList.remove('invalid');
+    if(totEl)totEl.textContent='—'; if(grEl){grEl.textContent='—';grEl.className='grade-pill';}
+  }
+  updateModalSummary(getSubjects(selClass).length);
+};
+
+function updateModalSummary(subjectCount) {
+  const subjects=getSubjects(selClass);
+  let filled=0,totalScore=0,count=0;
+  subjects.forEach((_,si)=>{
+    if(!unlockedSubjects.has(si)) return;
+    const tot=document.getElementById(`tot_${si}`)?.textContent;
+    if(tot&&tot!=='—'&&tot!==''){filled++;totalScore+=Number(tot);count++;}
+  });
+  const avg=count>0?(totalScore/count).toFixed(1)+'%':'—';
+  const unlocked=unlockedSubjects.size;
+  $('modal-summary').innerHTML=`
+    <span>Unlocked: <strong>${unlocked}/${subjectCount}</strong></span>
+    <span>Filled: <strong>${filled}</strong></span>
+    <span>Running Avg: <strong>${avg}</strong></span>
+    <span style="font-size:.74rem;opacity:.7">Only unlocked subjects will be saved</span>
+  `;
+}
+
+function getGrade(total) {
+  if(total>=75)return{g:'A1',r:'Excellent',cls:'gA'};
+  if(total>=70)return{g:'B2',r:'Very Good',cls:'gB'};
+  if(total>=65)return{g:'B3',r:'Good',cls:'gB'};
+  if(total>=60)return{g:'C4',r:'Credit',cls:'gC'};
+  if(total>=55)return{g:'C5',r:'Credit',cls:'gC'};
+  if(total>=50)return{g:'C6',r:'Credit',cls:'gC'};
+  if(total>=45)return{g:'D7',r:'Pass',cls:'gD'};
+  if(total>=40)return{g:'E8',r:'Pass',cls:'gD'};
+  return{g:'F9',r:'Fail',cls:'gF'};
+}
+
+/* ── Save Result (uses writeBatch for atomicity) ── */
+$('save-btn').addEventListener('click', async () => {
+  if (!currentStudent) return;
+  const subjects=getSubjects(selClass);
+  const btn=$('save-btn');
+  const subjectData=[]; let totalScore=0, anyError=false;
+
+  subjects.forEach((subj,si)=>{
+    if(!unlockedSubjects.has(si)) return; // skip locked subjects
+    const tests=[];
+    let caTotal=0, caComplete=true;
+    testsConfig.forEach((t,ti)=>{
+      const inp=document.getElementById(`t_${si}_${ti}`);
+      const v=inp?.value.trim()??'';
+      if(v===''){caComplete=false;return;}
+      const n=Number(v);
+      if(isNaN(n)||n<0||n>t.max){inp?.classList.add('invalid');anyError=true;caComplete=false;return;}
+      inp?.classList.remove('invalid');
+      tests.push({id:t.id,name:t.name,score:n,max:t.max}); caTotal+=n;
+    });
+    const exInp=document.getElementById(`ex_${si}`);
+    const exV=exInp?.value.trim()??'';
+    if(exV===''){return;} // skip rows where exam not filled
+    const exam=Number(exV);
+    if(isNaN(exam)||exam<0||exam>70){exInp?.classList.add('invalid');anyError=true;return;}
+    exInp?.classList.remove('invalid');
+    if(!caComplete){anyError=true;return;}
+    const total=caTotal+exam;
+    const{g,r}=getGrade(total);
+    totalScore+=total;
+    subjectData.push({name:subj,tests,caTotal,exam,total,grade:g,remark:r});
+  });
+
+  if(anyError){toast('Fix invalid scores before saving.','error');return;}
+  if(!subjectData.length){toast('Unlock at least one subject and enter complete scores.','error');return;}
+
+  const average=parseFloat((totalScore/subjectData.length).toFixed(2));
+  const docId=resultDocId(currentStudent.number,selClass,selTerm,selSession);
+  setBtn(btn,true);
+
+  try {
+    // Use writeBatch for atomic write
+    const batch=writeBatch(db);
+    const payload={
+      studentNumber:currentStudent.number, studentName:currentStudent.name,
+      class:selClass, term:selTerm, session:selSession, gender:currentStudent.gender||'',
+      subjects:subjectData, totalScore, average,
+      assessmentConfig:{tests:testsConfig},
+      submittedBy:currentTeacher.name||currentTeacher.email,
+      teacherUid:currentTeacher.uid,
+      submittedAt:serverTimestamp(), updatedAt:serverTimestamp(),
+    };
+    batch.set(doc(db,'results',docId), payload, {merge:true});
+    await batch.commit();
+
+    savedResults[currentStudent.number]={...payload,submittedAt:new Date(),updatedAt:new Date()};
+    renderStudents();
+    toast(`Result saved for ${currentStudent.name}!`);
+    closeModal();
+  } catch(err) { console.error(err); toast('Failed to save: '+err.message,'error'); }
+  finally { setBtn(btn,false); }
+});
+
+/* ── Modal close ── */
+$('close-modal').addEventListener('click', closeModal);
+$('close-modal-2').addEventListener('click', closeModal);
+$('modal-scores').addEventListener('click', e=>{ if(e.target===$('modal-scores')) closeModal(); });
+</script>
+</body>
+</html>
