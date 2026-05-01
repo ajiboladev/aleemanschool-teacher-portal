@@ -237,9 +237,23 @@
     #toast.info    { background:var(--p2); color:var(--white); }
     .spinner { display:inline-block; width:16px; height:16px; border:2.5px solid rgba(255,255,255,.4); border-top-color:var(--white); border-radius:50%; animation:spin .6s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg); } }
+        /* Eye toggle */
+.pw-wrap { position:relative; }
+.pw-wrap input { padding-right:2.6rem !important; }
+.pw-eye { position:absolute; right:.65rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#5a6a7c; font-size:1rem; padding:.15rem; line-height:1; }
+.pw-eye:hover { color:#1565c0; }
+/* Unlock eye */
+.unlock-inp-row { display:flex; align-items:center; gap:.25rem; }
+.unlock-eye { background:none; border:none; cursor:pointer; font-size:.88rem; color:#5a6a7c; padding:.1rem .15rem; line-height:1; flex-shrink:0; }
+.unlock-eye:hover { color:#1565c0; }
+/* Rate limit warning */
+.rate-warn { background:#fff8e1; color:#f57f17; padding:.65rem .95rem; border-radius:10px; font-size:.84rem; margin-top:.75rem; display:none; font-weight:600; }
+.rate-warn.show { display:block; }
     code { background:#edf1f7; padding:.1rem .4rem; border-radius:4px; font-size:.82em; }
 
     @media (max-width:600px) { .content { padding:1rem; } .topbar { flex-wrap:wrap; gap:.5rem; } }
+
+    /* code { background:#edf1f7; padding:.1rem .4rem; border-radius:4px; font-size:.82em; } */
   </style>
 </head>
 <body>
@@ -256,7 +270,14 @@
     <h1>Teacher Login</h1>
     <p class="sub">Aleeman School of Science &amp; Arabic Studies</p>
     <div class="fg"><label>Email Address</label><input type="email" id="l-email" placeholder="teacher@aleeman.edu.ng" autocomplete="email" /></div>
-    <div class="fg"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" /></div>
+    <div class="fg">
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" />
+        <button class="pw-eye" type="button" id="login-pw-eye" title="Show/hide password">👁️</button>
+      </div>
+    </div>
+    <div class="rate-warn" id="rate-warn">⚠️ Too many failed attempts. Wait <span id="rate-timer">30</span>s.</div>
     <button class="btn btn-primary btn-full" id="login-btn">Sign In</button>
     <div class="err" id="login-err"></div>
     <!-- <p style="margin-top:1.25rem;font-size:.78rem;color:var(--muted)"><a href="./index.html" style="color:var(--p2)">← Back to Portal Home</a></p> -->
@@ -552,16 +573,65 @@ function getPasswords(cls) {
 
 /* ── Login ── */
 async function doLogin() {
+  if (_loginLocked) { $('rate-warn')?.classList.add('show'); return; }
   clearErr();
   const email=$('l-email').value.trim(), pass=$('l-pass').value, btn=$('login-btn');
   if (!email||!pass) { showErr('Please fill in all fields.'); return; }
   setBtn(btn,true);
-  try { await signInWithEmailAndPassword(auth, email, pass); }
-  catch(err) {
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    _loginAttempts = 0;
+  } catch(err) {
+    _loginAttempts++;
+    if (_loginAttempts >= 5) {
+      setBtn(btn, false);
+      _loginLocked = true;
+      btn.disabled = true;
+      $('rate-warn')?.classList.add('show');
+      let t = 30;
+      $('rate-timer').textContent = t;
+      _lockTimer = setInterval(() => {
+        t--;
+        $('rate-timer').textContent = t;
+        if (t <= 0) {
+          clearInterval(_lockTimer);
+          _loginLocked = false; _loginAttempts = 0;
+          btn.disabled = false;
+          $('rate-warn')?.classList.remove('show');
+        }
+      }, 1000);
+      return;
+    }
     const m={'auth/invalid-credential':'Invalid email or password.','auth/user-not-found':'No account found.','auth/wrong-password':'Incorrect password.','auth/too-many-requests':'Too many attempts. Try later.','auth/network-request-failed':'Network error.'};
-    showErr(m[err.code]||`Login failed: ${err.message}`); setBtn(btn,false);
+    const left = _loginAttempts >= 3 ? ` (${5 - _loginAttempts} attempt${5-_loginAttempts!==1?'s':''} left)` : '';
+    showErr((m[err.code]||`Login failed: ${err.message}`) + left);
+    setBtn(btn, false);
   }
 }
+
+
+/* ── Login password eye toggle ── */
+document.getElementById('login-pw-eye')?.addEventListener('click', function() {
+  const inp = document.getElementById('l-pass');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  this.textContent = show ? '🙈' : '👁️';
+});
+
+/* ── Unlock subject eye toggle ── */
+window._toggleUnlockEye = si => {
+  const inp = document.getElementById(`unlock-inp-${si}`);
+  const btn = inp?.parentElement?.querySelector('.unlock-eye');
+  if (!inp) return;
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  if (btn) btn.textContent = show ? '🙈' : '👁️';
+};
+
+/* ── Login rate limiting (5 attempts → 30 second lockout) ── */
+let _loginAttempts = 0, _loginLocked = false, _lockTimer = null;
+
+
 $('login-btn').addEventListener('click', doLogin);
 ['l-email','l-pass'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}));
 
@@ -665,9 +735,13 @@ window._openScoreModal = studentId => {
           <div class="unlock-row">
             ${hasPass?`
               <button class="unlock-btn" id="unlock-btn-${si}" onclick="window._toggleUnlockForm(${si})">🔒 Unlock</button>
-              <div class="unlock-input-wrap" id="unlock-form-${si}">
-                <input class="unlock-inp" type="password" id="unlock-inp-${si}" placeholder="Subject password" autocomplete="off"
-                  onkeydown="if(event.key==='Enter')window._verifyUnlock(${si},'${subj.replace(/'/g,"\\'")}')" />
+
+             <div class="unlock-input-wrap" id="unlock-form-${si}">
+                <div class="unlock-inp-row">
+                  <input class="unlock-inp" type="password" id="unlock-inp-${si}" placeholder="Subject password" autocomplete="off"
+                    onkeydown="if(event.key==='Enter')window._verifyUnlock(${si},'${subj.replace(/'/g,"\\'")}')" />
+                  <button class="unlock-eye" type="button" onclick="window._toggleUnlockEye(${si})" title="Show/hide">👁️</button>
+                </div>
                 <button class="unlock-confirm-btn" onclick="window._verifyUnlock(${si},'${subj.replace(/'/g,"\\'")}')" title="Confirm">✓ Unlock</button>
               </div>`
             :`<button class="unlock-btn" id="unlock-btn-${si}" onclick="window._noPassUnlock(${si})">🔑 Unlock</button>`}
