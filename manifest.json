@@ -3,7 +3,7 @@
   "short_name": "Aleeman",
   "version": "1.0.0",
   "description": "Second To None",
-  "start_url": "/?source=pwa&v1.0.0",
+  "start_url": "/?source=pwa&v=1.0.0",
   "display": "standalone",
   "background_color": "#008000",
   "theme_color": "#008000",

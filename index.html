@@ -12,6 +12,9 @@
   
 
 
+    <script>window.FLOATING_TEXT = 'Proudly 2025/2026';</script>
+<script src="floating.js"></script>
+
 
    <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#008000" />
@@ -366,6 +369,26 @@
           <tbody id="score-tbody"></tbody>
         </table>
       </div>
+      <div id="remarks-wrap" style="margin-top:1rem">
+        <div class="info-note">🗒️ Remarks: Teachers and Principal can add short notes about student performance. To edit, unlock using the class remark password.</div>
+        <div style="display:flex;gap:.6rem;align-items:flex-start;flex-wrap:wrap">
+          <div style="flex:1">
+            <label style="font-weight:700;font-size:.82rem">Teacher's Remark</label>
+            <textarea id="teacher-remark" class="fg" style="width:100%;min-height:80px;padding:.6rem;border:1.5px solid var(--border);border-radius:8px;" disabled></textarea>
+          </div>
+          <div style="flex:1">
+            <label style="font-weight:700;font-size:.82rem">Principal's Remark</label>
+            <textarea id="principal-remark" class="fg" style="width:100%;min-height:80px;padding:.6rem;border:1.5px solid var(--border);border-radius:8px;" disabled></textarea>
+          </div>
+          <div style="width:240px;min-width:200px">
+            <label style="font-weight:700;font-size:.82rem">Unlock Remarks</label>
+            <div style="display:flex;gap:.4rem;margin-top:.4rem">
+              <input id="unlock-remarks-inp" type="password" placeholder="Class remark password" style="flex:1;padding:.48rem .6rem;border:1.5px solid var(--border);border-radius:8px;" />
+              <button class="btn btn-ghost btn-sm" id="unlock-remarks-btn" type="button">🔒 Unlock</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="modal-ftr">
       <div class="modal-summary" id="modal-summary"></div>
@@ -414,6 +437,7 @@ let selClass='', selTerm='', selSession='';
 let adminSession     = ''; // set by admin — max allowed
 let adminTerm    = ''; 
 let unlockedSubjects = new Set(); // indices unlocked in current modal
+let remarkPasswords = {}; // { 'JSS1': 'pass', 'SS1': 'pass' }
 
 /* ── Helpers ── */
 const $ = id => document.getElementById(id);
@@ -531,11 +555,12 @@ onAuthStateChanged(auth, async user => {
 /* ── Load admin config ── */
 async function loadConfig() {
   try {
-    const [sessSnap, assessSnap, subjSnap, passSnap] = await Promise.all([
+    const [sessSnap, assessSnap, subjSnap, passSnap, remarkSnap] = await Promise.all([
       getDoc(doc(db,'settings','session')),
       getDoc(doc(db,'settings','assessment')),
       getDoc(doc(db,'settings','subjects')),
       getDoc(doc(db,'settings','subjectPasswords')),
+      getDoc(doc(db,'settings','remarkPasswords')),
     ]);
     if (sessSnap.exists()) {
       const d=sessSnap.data();
@@ -556,6 +581,7 @@ async function loadConfig() {
       ? { JSS:subjSnap.data().JSS||DEFAULT_JSS, SS:subjSnap.data().SS||DEFAULT_SS }
       : { JSS:DEFAULT_JSS, SS:DEFAULT_SS };
     subjectPasswords = passSnap.exists() ? { JSS:passSnap.data().JSS||{}, SS:passSnap.data().SS||{} } : {};
+    remarkPasswords = remarkSnap.exists() ? (remarkSnap.data()||{}) : {};
   } catch(err) {
     console.warn('Config load (non-fatal):', err.message);
     testsConfig=[...DEFAULT_TESTS]; teacherSubjects={JSS:DEFAULT_JSS,SS:DEFAULT_SS}; subjectPasswords={};
@@ -758,6 +784,19 @@ window._openScoreModal = studentId => {
 
   subjects.forEach((_,si)=>window._recalcRow(si));
   updateModalSummary(subjects.length);
+
+  // Prefill and reset remarks UI
+  setTimeout(()=>{
+    const teacherArea = document.getElementById('teacher-remark');
+    const principalArea = document.getElementById('principal-remark');
+    const unlockInp = document.getElementById('unlock-remarks-inp');
+    const unlockBtn = document.getElementById('unlock-remarks-btn');
+    if (teacherArea) { teacherArea.value = existing?.teacherRemark||''; teacherArea.disabled = true; }
+    if (principalArea) { principalArea.value = existing?.principalRemark||''; principalArea.disabled = true; }
+    if (unlockInp) { unlockInp.value=''; unlockInp.disabled=false; }
+    if (unlockBtn) { unlockBtn.classList.remove('unlocked'); unlockBtn.textContent='🔒 Unlock'; unlockBtn.disabled=false; unlockBtn.onclick = () => window._verifyRemarkUnlock(); }
+  }, 0);
+
   openModal();
 };
 
@@ -865,6 +904,33 @@ function getGrade(total) {
   return{g:'F9',r:'Fail',cls:'gF'};
 }
 
+function getRemarkPassword(cls) {
+  return remarkPasswords[cls]||'';
+}
+
+window._verifyRemarkUnlock = () => {
+  const entered = (document.getElementById('unlock-remarks-inp')?.value||'').trim();
+  const correct = getRemarkPassword(selClass);
+  const inp = document.getElementById('unlock-remarks-inp');
+  if (!correct || entered === correct) {
+    _doUnlockRemarks();
+  } else {
+    if (inp) { inp.classList.add('err'); inp.value=''; setTimeout(()=>inp.classList.remove('err'),1200); }
+    toast('Incorrect remark password for this class','error',2000);
+  }
+};
+
+function _doUnlockRemarks() {
+  const t = document.getElementById('teacher-remark');
+  const p = document.getElementById('principal-remark');
+  const btn = document.getElementById('unlock-remarks-btn');
+  const inp = document.getElementById('unlock-remarks-inp');
+  if (t) t.disabled=false; if (p) p.disabled=false;
+  if (btn) { btn.classList.add('unlocked'); btn.textContent='🔓 Unlocked'; btn.disabled=true; }
+  if (inp) inp.disabled=true;
+  toast('Remarks unlocked — you may edit them now','success',1800);
+}
+
 /* ── Save Result (uses writeBatch for atomicity) ── */
 $('save-btn').addEventListener('click', async () => {
   if (!currentStudent) return;
@@ -908,11 +974,20 @@ $('save-btn').addEventListener('click', async () => {
   try {
     // Use writeBatch for atomic write
     const batch=writeBatch(db);
+    const existingResult = savedResults[currentStudent.number] || {};
+    const teacherRemarkToSave = (document.getElementById('unlock-remarks-btn')?.classList.contains('unlocked'))
+      ? (document.getElementById('teacher-remark')?.value||'').trim()
+      : (existingResult.teacherRemark||'');
+    const principalRemarkToSave = (document.getElementById('unlock-remarks-btn')?.classList.contains('unlocked'))
+      ? (document.getElementById('principal-remark')?.value||'').trim()
+      : (existingResult.principalRemark||'');
+
     const payload={
       studentNumber:currentStudent.number, studentName:currentStudent.name,
       class:selClass, term:selTerm, session:selSession, gender:currentStudent.gender||'',
       subjects:subjectData, totalScore, average,
       assessmentConfig:{tests:testsConfig},
+      teacherRemark:teacherRemarkToSave, principalRemark:principalRemarkToSave,
       submittedBy:currentTeacher.name||currentTeacher.email,
       teacherUid:currentTeacher.uid,
       submittedAt:serverTimestamp(), updatedAt:serverTimestamp(),
