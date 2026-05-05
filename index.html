@@ -929,6 +929,34 @@ function _doUnlockRemarks() {
   toast('Remarks unlocked — you may edit them now','success',1800);
 }
 
+/* ── Merge subjects intelligently (preserves existing + adds/updates new) ── */
+function mergeSubjects(existingSubjects, newSubjects) {
+  if (!existingSubjects || !Array.isArray(existingSubjects)) {
+    existingSubjects = [];
+  }
+  if (!newSubjects || !Array.isArray(newSubjects)) {
+    return existingSubjects;
+  }
+  
+  // Create a map of existing subjects by name for quick lookup
+  const subjectMap = {};
+  existingSubjects.forEach(subj => {
+    if (subj && subj.name) {
+      subjectMap[subj.name] = { ...subj };
+    }
+  });
+  
+  // Merge: update existing subjects or add new ones
+  newSubjects.forEach(newSubj => {
+    if (newSubj && newSubj.name) {
+      subjectMap[newSubj.name] = { ...newSubj };
+    }
+  });
+  
+  // Return all subjects (filtering happens naturally as only edited subjects are in newSubjects)
+  return Object.values(subjectMap);
+}
+
 /* ── Save Result (uses writeBatch for atomicity) ── */
 $('save-btn').addEventListener('click', async () => {
   if (!currentStudent) return;
@@ -980,10 +1008,20 @@ $('save-btn').addEventListener('click', async () => {
       ? (document.getElementById('principal-remark')?.value||'').trim()
       : (existingResult.principalRemark||'');
 
+    // Merge subjects: keep existing subjects, update/add new ones
+    const mergedSubjects = mergeSubjects(existingResult.subjects, subjectData);
+    
+    // Recalculate totals based on merged subjects
+    let totalScoreMerged = 0;
+    mergedSubjects.forEach(s => { totalScoreMerged += (s.total || 0); });
+    const averageMerged = mergedSubjects.length > 0 
+      ? parseFloat((totalScoreMerged / mergedSubjects.length).toFixed(2))
+      : 0;
+
     const payload={
       studentNumber:currentStudent.number, studentName:currentStudent.name,
       class:selClass, term:selTerm, session:selSession, gender:currentStudent.gender||'',
-      subjects:subjectData, totalScore, average,
+      subjects:mergedSubjects, totalScore:totalScoreMerged, average:averageMerged,
       assessmentConfig:{tests:testsConfig},
       teacherRemark:teacherRemarkToSave, principalRemark:principalRemarkToSave,
       submittedBy:currentTeacher.name||currentTeacher.email,

@@ -53,7 +53,7 @@
       container.style.padding = '8px 10px';
       container.style.fontSize = '12px';
       container.style.left = '10px';
-      container.style.bottom = '25px';
+      container.style.bottom = '70px';
       container.style.borderRadius = '10px';
       container.style.opacity = '0.95';
     } else {
