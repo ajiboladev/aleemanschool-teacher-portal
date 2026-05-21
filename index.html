@@ -8,6 +8,7 @@
     />
   <title>Teacher Portal — Aleeman School</title>
   <link rel="icon" type="image/x-icon" href="aleeman-logo.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   
 
@@ -203,7 +204,7 @@
 <body>
 
 <div id="auth-loading">
-  <div class="al-icon">👨‍🏫</div>
+  <div class="al-icon"><i class="fa-chalkboard"></i></div>
   <div class="al-spinner"></div>
   <p>Verifying session…</p>
 </div>
@@ -230,7 +231,7 @@
 <div id="dashboard-page">
   <div class="topbar">
     <div class="topbar-l">
-      <span class="ico">👨‍🏫</span>
+      <span class="ico"><i class="fa-chalkboard"></i></span>
       <div class="topbar-info">
         <h2>Teacher Portal</h2>
         <p>Aleeman School of Science &amp; Arabic Studies</p>
@@ -244,7 +245,7 @@
 
   <div class="content">
     <div class="filter-card">
-      <h3>📂 Select Class &amp; Session</h3>
+      <h3><i class="fas fa-folder"></i> Select Class &amp; Session</h3>
       <div class="filter-grid">
         <div class="fg" style="margin:0">
           <label>Class</label>
@@ -283,7 +284,7 @@
           </div>
         </div>
         <div style="padding:.75rem 1.25rem">
-          <div class="info-note">📝 Click <strong>Enter Result</strong> to record scores. Each subject must be unlocked with its password before scores can be entered.</div>
+          <div class="info-note"><i class="fas fa-info-circle"></i> Click <strong>Enter Result</strong> to record scores. Each subject must be unlocked with its password before scores can be entered.</div>
         </div>
         <table>
           <thead><tr><th>#</th><th>Student Name</th><th>Number</th><th>Gender</th><th>Status</th><th>Avg / 100</th><th>Action</th></tr></thead>
@@ -302,7 +303,7 @@
       <button class="modal-close" id="close-modal">✕</button>
     </div>
     <div class="modal-body">
-      <div class="lock-legend">🔒 Each subject requires its password to unlock. Click the lock button next to a subject, enter the password, and press ✓ to enable score entry for that subject. <strong>To remove a subject's scores</strong>, unlock it and clear all its inputs, then save.</div>
+      <div class="lock-legend"><i class="fas fa-lock"></i> Each subject requires its password to unlock. Click the lock button next to a subject, enter the password, and press ✓ to enable score entry for that subject. <strong>To remove a subject's scores</strong>, unlock it and clear all its inputs, then save.</div>
       <div class="score-wrap">
         <table class="score-table">
           <thead id="score-thead"></thead>
@@ -310,7 +311,7 @@
         </table>
       </div>
       <div id="remarks-wrap" style="margin-top:1rem">
-        <div class="info-note">🗒️ Remarks: Teachers and Principal can add short notes about student performance. To edit, unlock using the class remark password.</div>
+        <div class="info-note"><i class="fas fa-info-circle"></i> Remarks: Teachers and Principal can add short notes about student performance. To edit, unlock using the class remark password.</div>
         <div style="display:flex;gap:.6rem;align-items:flex-start;flex-wrap:wrap">
           <div style="flex:1">
             <label style="font-weight:700;font-size:.82rem">Teacher's Remark</label>
@@ -324,7 +325,7 @@
             <label style="font-weight:700;font-size:.82rem">Unlock Remarks</label>
             <div style="display:flex;gap:.4rem;margin-top:.4rem">
               <input id="unlock-remarks-inp" type="password" placeholder="Class remark password" style="flex:1;padding:.48rem .6rem;border:1.5px solid var(--border);border-radius:8px;" />
-              <button class="btn btn-ghost btn-sm" id="unlock-remarks-btn" type="button">🔒 Unlock</button>
+              <button class="btn btn-ghost btn-sm" id="unlock-remarks-btn" type="button"><i class="fas fa-unlock"></i> Unlock</button>
             </div>
           </div>
         </div>
@@ -333,7 +334,7 @@
     <div class="modal-ftr">
       <div class="modal-summary" id="modal-summary"></div>
       <button class="btn btn-ghost btn-sm" id="close-modal-2">Cancel</button>
-      <button class="btn btn-green btn-sm" id="save-btn">💾 Save Result</button>
+      <button class="btn btn-green btn-sm" id="save-btn"><i class="fas fa-save"></i> Save Result</button>
     </div>
   </div>
 </div>
