@@ -9,7 +9,7 @@
   <title>Teacher Portal — Aleeman School</title>
   <link rel="icon" type="image/x-icon" href="aleeman-logo.png" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 
     <script>window.FLOATING_TEXT = 'Proudly 2024/2025 Set';</script>
@@ -203,14 +203,14 @@
 <body>
 
 <div id="auth-loading">
-  <div class="al-icon"><i class="fa-chalkboard"></i></div>
+  <div class="al-icon"><i class="fa-solid fa-book-reader" style="color: rgb(65, 65, 240);"></i></i></div>
   <div class="al-spinner"></div>
   <p>Verifying session…</p>
 </div>
 
 <div id="login-page">
   <div class="login-box">
-    <div class="lgo">👨‍🏫</div>
+    <div class="lgo"><i class="fa-solid fa-chalkboard-teacher" style="color: rgb(65, 65, 240);"></i></div>
     <h1>Teacher Login</h1>
     <p class="sub">Aleeman School of Science &amp; Arabic Studies</p>
     <div class="fg"><label>Email Address</label><input type="email" id="l-email" placeholder="teacher@aleeman.edu.ng" autocomplete="email" /></div>
@@ -230,7 +230,7 @@
 <div id="dashboard-page">
   <div class="topbar">
     <div class="topbar-l">
-      <span class="ico">👨‍🏫</span>
+      <span class="ico"><i class="fa-solid fa-chalkboard-teacher"></i></span>
       <div class="topbar-info">
         <h2>Teacher Portal</h2>
         <p>Aleeman School of Science &amp; Arabic Studies</p>
@@ -244,7 +244,7 @@
 
   <div class="content">
     <div class="filter-card">
-      <h3>📂 Select Class &amp; Session</h3>
+      <h3><i class="fa-solid fa-folder"></i> Select Class &amp; Session</h3>
       <div class="filter-grid">
         <div class="fg" style="margin:0">
           <label>Class</label>
@@ -283,7 +283,7 @@
           </div>
         </div>
         <div style="padding:.75rem 1.25rem">
-          <div class="info-note">📝 Click <strong>Enter Result</strong> to record scores. Each subject must be unlocked with its password before scores can be entered.</div>
+          <div class="info-note"><i class="fa-solid fa-info-circle"></i> Click <strong>Enter Result</strong> to record scores. Each subject must be unlocked with its password before scores can be entered.</div>
         </div>
         <table>
           <thead><tr><th>#</th><th>Student Name</th><th>Number</th><th>Gender</th><th>Status</th><th>Avg / 100</th><th>Action</th></tr></thead>
@@ -302,7 +302,7 @@
       <button class="modal-close" id="close-modal">✕</button>
     </div>
     <div class="modal-body">
-      <div class="lock-legend">🔒 Each subject requires its password to unlock. Click the lock button next to a subject, enter the password, and press ✓ to enable score entry for that subject. <strong>To remove a subject's scores</strong>, unlock it and clear all its inputs, then save.</div>
+      <div class="lock-legend"><i class="fa-solid fa-lock"></i> Each subject requires its password to unlock. Click the lock button next to a subject, enter the password, and press ✓ to enable score entry for that subject. <strong>To remove a subject's scores</strong>, unlock it and clear all its inputs, then save.</div>
       <div class="score-wrap">
         <table class="score-table">
           <thead id="score-thead"></thead>
@@ -310,7 +310,7 @@
         </table>
       </div>
       <div id="remarks-wrap" style="margin-top:1rem">
-        <div class="info-note">🗒️ Remarks: Teachers and Principal can add short notes about student performance. To edit, unlock using the class remark password.</div>
+        <div class="info-note"><i class="fa-solid fa-note-sticky"></i> Remarks: Teachers and Principal can add short notes about student performance. To edit, unlock using the class remark password.</div>
         <div style="display:flex;gap:.6rem;align-items:flex-start;flex-wrap:wrap">
           <div style="flex:1">
             <label style="font-weight:700;font-size:.82rem">Teacher's Remark</label>
@@ -324,7 +324,7 @@
             <label style="font-weight:700;font-size:.82rem">Unlock Remarks</label>
             <div style="display:flex;gap:.4rem;margin-top:.4rem">
               <input id="unlock-remarks-inp" type="password" placeholder="Class remark password" style="flex:1;padding:.48rem .6rem;border:1.5px solid var(--border);border-radius:8px;" />
-              <button class="btn btn-ghost btn-sm" id="unlock-remarks-btn" type="button">🔒 Unlock</button>
+              <button class="btn btn-ghost btn-sm" id="unlock-remarks-btn" type="button"><i class="fa-solid fa-lock"></i> Unlock</button>
             </div>
           </div>
         </div>
@@ -333,7 +333,7 @@
     <div class="modal-ftr">
       <div class="modal-summary" id="modal-summary"></div>
       <button class="btn btn-ghost btn-sm" id="close-modal-2">Cancel</button>
-      <button class="btn btn-green btn-sm" id="save-btn">💾 Save Result</button>
+      <button class="btn btn-green btn-sm" id="save-btn"><i class="fa-solid fa-floppy-disk"></i> Save Result</button>
     </div>
   </div>
 </div>
@@ -612,9 +612,9 @@ function renderStudents() {
     return `<tr>
       <td>${i+1}</td><td><strong>${esc(s.name)}</strong></td><td><code>${esc(s.number)}</code></td>
       <td>${esc(s.gender||'—')}</td>
-      <td><span class="status ${done?'st-done':'st-pending'}">${done?'✅ Done':'⏳ Pending'}</span></td>
+      <td><span class="status ${done?'st-done':'st-pending'}">${done?'<i class="fa-solid fa-circle-check"></i>  Done':'⏳ Pending'}</span></td>
       <td><strong>${avg}</strong></td>
-      <td><button class="btn btn-primary btn-sm" onclick="window._openScoreModal('${esc(s.id)}')">${done?'✏️ Edit':'Enter Result'}</button></td>
+      <td><button class="btn btn-primary btn-sm" onclick="window._openScoreModal('${esc(s.id)}')">${done?'<i class="fa-solid fa-pen"></i> Edit':'Enter Result'}</button></td>
     </tr>`;
   }).join('');
 }
@@ -662,7 +662,7 @@ window._openScoreModal = studentId => {
           <span class="subj-name-text">${esc(subj)}</span>
           <div class="unlock-row">
             ${hasPass?`
-              <button class="unlock-btn" id="unlock-btn-${si}" onclick="window._toggleUnlockForm(${si})">🔒 Unlock</button>
+              <button class="unlock-btn" id="unlock-btn-${si}" onclick="window._toggleUnlockForm(${si})"><i class="fa-solid fa-lock"></i> Unlock</button>
               <div class="unlock-input-wrap" id="unlock-form-${si}">
                 <div class="unlock-inp-row">
                   <input class="unlock-inp" type="password" id="unlock-inp-${si}" placeholder="Subject password" autocomplete="off"
@@ -671,7 +671,7 @@ window._openScoreModal = studentId => {
                 </div>
                 <button class="unlock-confirm-btn" onclick="window._verifyUnlock(${si},'${subj.replace(/'/g,"\\'")}')" title="Confirm">✓ Unlock</button>
               </div>`
-            :`<button class="unlock-btn" id="unlock-btn-${si}" onclick="window._noPassUnlock(${si})">🔑 Unlock</button>`}
+            :`<button class="unlock-btn" id="unlock-btn-${si}" onclick="window._noPassUnlock(${si})"><i class="fa-solid fa-key"></i> Unlock</button>`}
           </div>
         </div>
       </td>
@@ -694,7 +694,7 @@ window._openScoreModal = studentId => {
     if (teacherArea)   { teacherArea.value   = existing?.teacherRemark||'';   teacherArea.disabled   = true; }
     if (principalArea) { principalArea.value = existing?.principalRemark||''; principalArea.disabled = true; }
     if (unlockInp) { unlockInp.value=''; unlockInp.disabled=false; }
-    if (unlockBtn) { unlockBtn.classList.remove('unlocked'); unlockBtn.textContent='🔒 Unlock'; unlockBtn.disabled=false; unlockBtn.onclick = () => window._verifyRemarkUnlock(); }
+    if (unlockBtn) { unlockBtn.classList.remove('unlocked'); unlockBtn.textContent='<i class="fa-solid fa-lock"></i> Unlock'; unlockBtn.disabled=false; unlockBtn.onclick = () => window._verifyRemarkUnlock(); }
   }, 0);
 
   openModal();
@@ -733,7 +733,7 @@ function _doUnlock(si, subjectName) {
   const form=document.getElementById(`unlock-form-${si}`);
   if (row) row.classList.replace('row-locked','row-unlocked');
   document.querySelectorAll(`#score-row-${si} .score-input`).forEach(inp=>{inp.disabled=false;});
-  if (btn) { btn.textContent='🔓 Unlocked'; btn.classList.add('unlocked'); btn.disabled=true; }
+  if (btn) { btn.textContent='<i class="fa-solid fa-unlock"></i> Unlocked'; btn.classList.add('unlocked'); btn.disabled=true; }
   if (form) { form.classList.remove('show'); }
   window._recalcRow(si);
   updateModalSummary(getSubjects(selClass).length);
@@ -820,7 +820,7 @@ function _doUnlockRemarks() {
   const btn = document.getElementById('unlock-remarks-btn');
   const inp = document.getElementById('unlock-remarks-inp');
   if (t) t.disabled=false; if (p) p.disabled=false;
-  if (btn) { btn.classList.add('unlocked'); btn.textContent='🔓 Unlocked'; btn.disabled=true; }
+  if (btn) { btn.classList.add('unlocked'); btn.textContent='<i class="fa-solid fa-unlock"></i> Unlocked'; btn.disabled=true; }
   if (inp) inp.disabled=true;
   toast('Remarks unlocked — you may edit them now','success',1800);
 }
