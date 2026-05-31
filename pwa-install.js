@@ -264,7 +264,7 @@ function showInstallSuccessMessage() {
       </svg>
       <div>
         <strong>App installed!</strong>
-        <p style="margin: 4px 0 0 0; font-size: 13px;">JOYIN is now on your home screen</p>
+        <p style="margin: 4px 0 0 0; font-size: 13px;">Aleeman is now on your home screen</p>
       </div>
     </div>
   `;

@@ -4,7 +4,7 @@
 // ============================================
 
 const CACHE_VERSION = 'v1.0.0'; // 👈 INCREMENT THIS FOR EACH UPDATE
-const CACHE_NAME = `joyin-${CACHE_VERSION}`;
+const CACHE_NAME = `aleeman-${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
 // Essential files to cache
